@@ -1,15 +1,12 @@
 package com.company.tasks;
 
-import org.springframework.stereotype.Component;
-
-import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by Yevhen on 19.04.2016.
  */
-@Component
+
 public class NumberTaskProvider implements TaskProvider<Number> {
     private static final double emptyDoubleArray[] = {};
     private static final double calcAverageDoubleValueTaskInputData[] = {123.66, 55.0, 729.8, 44.0};
@@ -22,7 +19,6 @@ public class NumberTaskProvider implements TaskProvider<Number> {
 
     private List<Task<? extends Number>> tasks = new ArrayList<>();
 
-    @PostConstruct
     public void init() {
         tasks.add(new CalcAverageDoubleValueTask(calcAverageDoubleValueTaskInputData));
         tasks.add(new CalcAverageDoubleValueTask(emptyDoubleArray));

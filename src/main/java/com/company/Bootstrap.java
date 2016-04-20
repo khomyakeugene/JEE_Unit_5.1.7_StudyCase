@@ -1,17 +1,14 @@
 package com.company;
 
 import com.company.tasks.Executor;
+import com.company.tasks.ExecutorFactory;
 import com.company.tasks.TaskProvider;
-import org.springframework.beans.factory.ObjectFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.stereotype.Component;
 
-@Component
 public class Bootstrap {
     private TaskProvider<Number> taskProvider;
-    private ObjectFactory<Executor<Number>> executorFactory;
+    private ExecutorFactory executorFactory;
 
     public static void main(String[] args) throws Exception  {
         ApplicationContext applicationContext = new ClassPathXmlApplicationContext("application-context.xml");
@@ -22,7 +19,7 @@ public class Bootstrap {
     }
 
     private void execute() throws Exception {
-        Executor<Number> executor = executorFactory.getObject();
+        Executor<Number> executor = executorFactory.getNumberExecutor();
         taskProvider.getAllTasks().forEach(executor::addTask);
 
         executor.execute();
@@ -33,13 +30,11 @@ public class Bootstrap {
         executor.getInvalidResults().forEach(System.out::println);
     }
 
-    @Autowired
     public void setTaskProvider(TaskProvider<Number> taskProvider) {
         this.taskProvider = taskProvider;
     }
 
-    @Autowired
-    public void setExecutorFactory(ObjectFactory<Executor<Number>> executorFactory) {
+    public void setExecutorFactory(ExecutorFactory executorFactory) {
         this.executorFactory = executorFactory;
     }
 }
