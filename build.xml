@@ -1,0 +1,85 @@
+<project name="JEE_Unit_5.1.7_StudyCase" basedir="." default="main">
+
+    <property name="lib" location="lib"/>
+    <property name="junit" location="${lib}" />
+    <property name="junit.jar" location="${junit}/junit-4.12.jar"/>
+    <property name="hamcrest.jar" location="${junit}/hamcrest-core-1.3.jar"/>
+    <property name="src" location="src/main/java"/>
+    <property name="src.build" location="build"/>
+    <property name="classes" location="${src.build}/classes"/>
+    <property name="test" location="src/test"/>
+    <property name="test.src" location="${test}/java"/>
+    <property name="test.build" location="${test}/build"/>
+    <property name="test.class.name" value="com.company.tasks.implementation.TaskExecutorTest"/>
+    <property name="jar" location="${src.build}/jar"/>
+    <property name="jar.name" value="${ant.project.name}.jar"/>
+    <property name="build.name" location="${jar}/${jar.name}"/>
+    <property name="deploy" location="deploy"/>
+    <property name="deploy.name" location="${deploy}/${jar.name}"/>
+    <property name="report" location="${test}/report"/>
+    <property name="report.filename" value="test_results"/>
+
+    <path id="test.classpath">
+        <pathelement location="${junit.jar}"/>
+        <pathelement location="${hamcrest.jar}"/>
+        <pathelement location="${classes}"/>
+    </path>
+
+    <target name="clean.build.data">
+        <delete dir="${jar}"/>
+        <delete dir="${src.build}"/>
+        <delete dir="${test.build}"/>
+    </target>
+
+    <target name="clean.test.result">
+        <delete dir="${report}"/>
+    </target>
+
+    <target name="clean">
+        <antcall target="clean.build.data"/>
+        <antcall target="clean.test.result"/>
+    </target>
+
+    <target name="compile" depends="clean">
+        <mkdir dir="${classes}"/>
+        <javac srcdir="${src}" destdir="${classes}" source="1.8" target="1.8" includeantruntime="false"/>
+    </target>
+
+    <target name="compile.test" depends="compile">
+        <mkdir dir="${test.build}"/>
+        <javac srcdir="${test.src}" destdir="${test.build}" source="1.8" target="1.8" includeantruntime="false">
+            <classpath>
+                <path refid="test.classpath"/>
+            </classpath>
+        </javac>
+    </target>
+
+    <target name="test" depends="compile.test">
+        <mkdir dir="${report}"/>
+        <junit printsummary="yes" haltonfailure="yes">
+            <classpath>
+                <path refid="test.classpath"/>
+                <pathelement location="${test.build}"/>
+            </classpath>
+
+            <test name="${test.class.name}" haltonfailure="yes" todir="${report}" outfile="${report.filename}">
+                <formatter type="plain"/>
+            </test>
+        </junit>
+    </target>
+
+    <target name="jar" depends="test,compile">
+        <delete dir="${jar}"/>
+        <mkdir dir="${jar}"/>
+        <jar destfile="${build.name}" basedir="${classes}"/>
+    </target>
+
+    <target name="deploy" depends="jar">
+        <delete dir="${deploy}"/>
+        <mkdir dir="${deploy}"/>
+        <copy file="${build.name}" todir="${deploy}"/>
+        <antcall target="clean.build.data"/>
+    </target>
+
+    <target name="main" depends="deploy"/>
+</project>
